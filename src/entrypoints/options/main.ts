@@ -77,6 +77,7 @@ async function main(): Promise<void> {
   });
   ignoreEl.addEventListener('change', () => save({ ignoreInputs: ignoreEl.checked }));
   themeEl.addEventListener('change', () => save({ theme: themeEl.value as Theme }));
+  document.documentElement.dataset.ready = 'true';
 }
 
 void main();

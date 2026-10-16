@@ -7,7 +7,7 @@
  * Needs google-chrome (or CHROME_BIN) and ImageMagick `convert`.
  */
 import { execFileSync } from 'node:child_process';
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { cpSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { createServer } from 'node:http';
 import { join, resolve } from 'node:path';
 import { Chrome, sleep } from './lib/chrome.mjs';
@@ -76,8 +76,21 @@ function compose(shotPath, outName, title, subtitle, shotWidth) {
 let chrome;
 try {
   chrome = await Chrome.launch();
-  const extId = await chrome.loadExtension(EXT_DIR);
+  // Page access is optional and CDP cannot click Chrome's permission prompt,
+  // so load a copy with the permission pre-granted and enable the tooltip
+  // through the real settings flow.
+  const grantedDir = join(TMP, 'granted');
+  rmSync(grantedDir, { recursive: true, force: true });
+  cpSync(EXT_DIR, grantedDir, { recursive: true });
+  const manifest = JSON.parse(readFileSync(join(EXT_DIR, 'manifest.json'), 'utf8'));
+  writeFileSync(join(grantedDir, 'manifest.json'), JSON.stringify({ ...manifest, host_permissions: ['<all_urls>'] }));
+  const extId = await chrome.loadExtension(grantedDir);
   await sleep(800);
+  const setup = await chrome.open(`chrome-extension://${extId}/options.html`);
+  await setup.waitFor("document.documentElement.dataset.ready");
+  await setup.eval("document.querySelector('#tooltipEnabled').click()", { userGesture: true });
+  await sleep(800);
+  await setup.close();
 
   // 1. Tooltip on a real-looking page, captured straight at 1280x800.
   const tab = await chrome.open(pageUrl);
@@ -99,9 +112,9 @@ try {
 
   // 2. Popup
   const popup = await chrome.open(`chrome-extension://${extId}/popup.html`);
-  await popup.waitFor("document.querySelector('#source')");
+  await popup.waitFor("document.documentElement.dataset.ready");
   await popup.eval(`(() => { const s = document.querySelector('#source'); s.value = 'Съешь же ещё этих мягких французских булок, да выпей чаю'; s.dispatchEvent(new Event('input', { bubbles: true })); s.blur(); })()`);
-  await popup.setViewport(400, 400, 2);
+  await popup.setViewport(400, 470, 2);
   const popupShot = join(TMP, 'popup.png');
   writeFileSync(popupShot, await popup.screenshot());
   await popup.close();
@@ -109,7 +122,7 @@ try {
 
   // 3. Window
   const win = await chrome.open(`chrome-extension://${extId}/window.html`);
-  await win.waitFor("document.querySelector('#source')");
+  await win.waitFor("document.documentElement.dataset.ready");
   await win.eval(`(() => { const d = document.querySelector('#direction'); d.value = 'lat2cyr'; d.dispatchEvent(new Event('change', { bubbles: true })); const s = document.querySelector('#source'); s.value = 'Dobro pozhalovat v Sankt-Peterburg! Nevskiy prospekt, Ermitazh, Petropavlovskaya krepost.'; s.dispatchEvent(new Event('input', { bubbles: true })); s.blur(); })()`);
   await win.setViewport(560, 440, 2);
   const winShot = join(TMP, 'window.png');
@@ -121,12 +134,12 @@ try {
 
   // 4. Options
   const options = await chrome.open(`chrome-extension://${extId}/options.html`);
-  await options.waitFor("document.querySelector('#standard option')");
-  await options.setViewport(600, 520, 2);
+  await options.waitFor("document.documentElement.dataset.ready");
+  await options.setViewport(600, 640, 2);
   const optShot = join(TMP, 'options.png');
   writeFileSync(optShot, await options.screenshot());
   await options.close();
-  compose(optShot, '4-options.png', 'Four standards, your rules', 'Popular, GOST 7.79-2000, passport\n(ICAO) and BGN/PCGN. Tooltip delay,\ntext fields, light or dark theme.', 640);
+  compose(optShot, '4-options.png', 'Your rules', 'Four standards: Popular, GOST\n7.79-2000, passport (ICAO), BGN/PCGN.\nTooltip delay, text fields, theme.', 600);
 
   // 5. Small promo tile 440x280
   convert([

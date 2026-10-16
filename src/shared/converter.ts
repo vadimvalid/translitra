@@ -156,10 +156,7 @@ export async function mountConverter(root: HTMLElement, options: ConverterOption
   if (options.showTooltipBanner) {
     const bannerEl = root.querySelector<HTMLDivElement>('#tooltip-banner')!;
     const enableEl = root.querySelector<HTMLButtonElement>('#enable-tooltip')!;
-    const refreshBanner = async () => {
-      bannerEl.hidden = settings.tooltipEnabled && (await hasPageAccess());
-    };
-    void refreshBanner();
+    bannerEl.hidden = settings.tooltipEnabled && (await hasPageAccess());
     enableEl.addEventListener('click', async () => {
       enableEl.disabled = true;
       try {
@@ -185,6 +182,7 @@ export async function mountConverter(root: HTMLElement, options: ConverterOption
   });
 
   update();
+  document.documentElement.dataset.ready = 'true';
 
   return {
     setSource(text) {

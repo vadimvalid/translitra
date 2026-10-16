@@ -58,7 +58,7 @@ try {
 
   // ---------- popup ----------
   const popup = await chrome.open(`chrome-extension://${extId}/popup.html`);
-  const popupReady = await popup.waitFor("document.querySelector('#source')");
+  const popupReady = await popup.waitFor("document.documentElement.dataset.ready");
   check('popup renders', popupReady, popupReady ? '' : `errors=${JSON.stringify(popup.errors())} url=${await popup.eval('location.href')}`);
   const popupResult = await popup.eval(`(() => {
     const src = document.querySelector('#source');
@@ -104,7 +104,7 @@ try {
 
   // ---------- options ----------
   const options = await chrome.open(`chrome-extension://${extId}/options.html`);
-  check('options renders', await options.waitFor("document.querySelector('#standard option')"), JSON.stringify(options.errors()));
+  check('options renders', await options.waitFor("document.documentElement.dataset.ready"), JSON.stringify(options.errors()));
   const optState = await options.eval(`(() => ({
     title: document.querySelector('h1').textContent,
     standard: document.querySelector('#standard').value,
@@ -119,7 +119,7 @@ try {
 
   // ---------- window ----------
   const win = await chrome.open(`chrome-extension://${extId}/window.html`);
-  check('converter window renders', await win.waitFor("document.querySelector('#source')"), JSON.stringify(win.errors()));
+  check('converter window renders', await win.waitFor("document.documentElement.dataset.ready"), JSON.stringify(win.errors()));
   const openWindowHidden = await win.eval("document.querySelector('#open-window').hidden");
   check('window hides "open in window" button', openWindowHidden === true);
   await win.eval(`(() => { const s = document.querySelector('#source'); s.value = 'Съешь же ещё этих мягких французских булок, да выпей чаю'; s.dispatchEvent(new Event('input', { bubbles: true })); })()`);
@@ -135,7 +135,7 @@ try {
   await sleep(800);
 
   const opt2 = await chrome.open(`chrome-extension://${grantedId}/options.html`);
-  await opt2.waitFor("document.querySelector('#standard option')");
+  await opt2.waitFor("document.documentElement.dataset.ready");
   await opt2.eval("document.querySelector('#tooltipEnabled').click()", { userGesture: true });
   await sleep(800);
   const enabled = await opt2.eval(`(async () => ({
@@ -191,7 +191,7 @@ try {
   await tab.close();
 
   const opt3 = await chrome.open(`chrome-extension://${grantedId}/options.html`);
-  await opt3.waitFor("document.querySelector('#tooltipEnabled').checked");
+  await opt3.waitFor("document.documentElement.dataset.ready && document.querySelector('#tooltipEnabled').checked");
   await opt3.eval("document.querySelector('#tooltipEnabled').click()", { userGesture: true });
   await sleep(800);
   const disabled = await opt3.eval(`(async () => ({
