@@ -16,6 +16,7 @@
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
     "smoke": "wxt build && node scripts/smoke.mjs",
+    "screenshots": "wxt build && node scripts/screenshots.mjs",
     "postinstall": "wxt prepare"
   },
   "devDependencies": {

@@ -47,6 +47,18 @@ Transliteration of text between Cyrillic and Latin alphabets.
 - **activeTab** + **scripting** — reads the current text selection of the active tab when the user clicks the toolbar icon or presses the shortcut.
 - **Host permissions `<all_urls>`** — the content script shows the tooltip next to selected text on any page. It only reads the text the user selected, processes it locally and never sends it anywhere.
 
+## Privacy policy URL
+
+https://vadimvalid.github.io/translitra/privacy.html
+
 ## Data usage
 
 The extension does not collect, transmit or store any user data. Settings are kept in Chrome's sync storage.
+
+## Assets
+
+- Screenshots 1280×800: `store/screenshots/1-tooltip.png` … `4-options.png`
+- Small promo tile 440×280: `store/screenshots/promo-small-440x280.png`
+- Icon 128×128: `src/public/icon/128.png`
+
+Regenerate with `pnpm screenshots`.

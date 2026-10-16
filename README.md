@@ -24,6 +24,7 @@ pnpm typecheck    # tsc --noEmit
 pnpm build        # .output/chrome-mv3/
 pnpm zip          # .output/translitra-<version>-chrome.zip
 pnpm smoke        # builds, then drives headless Chrome through the popup, options, window and tooltip
+pnpm screenshots  # builds, then renders Chrome Web Store screenshots into store/screenshots/
 ```
 
 Manual install: `chrome://extensions` → Developer mode → Load unpacked → `.output/chrome-mv3`.
@@ -44,10 +45,15 @@ src/
 └─ public/           # icons and _locales (en, ru)
 tests/core/          # vitest
 scripts/smoke.mjs    # headless Chrome smoke test
-store/               # Chrome Web Store assets and texts
+store/               # Chrome Web Store texts and generated screenshots
+docs/                # GitHub Pages: landing and privacy policy
 ```
 
 Built with [WXT](https://wxt.dev) (Manifest V3), vanilla TypeScript and Vitest.
+
+## Publishing
+
+Store listing texts, permission justifications and the privacy policy URL are in [store/description.md](store/description.md). The privacy policy is served from GitHub Pages at https://vadimvalid.github.io/translitra/privacy.html (deployed automatically from `docs/` by the Pages workflow).
 
 ## License
 
