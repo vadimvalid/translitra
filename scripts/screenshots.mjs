@@ -90,6 +90,7 @@ try {
   await setup.waitFor("document.documentElement.dataset.ready");
   await setup.eval("document.querySelector('#tooltipEnabled').click()", { userGesture: true });
   await sleep(800);
+  if (process.env.DEBUG) console.log('setup:', JSON.stringify(await setup.eval(`(async () => ({ checked: document.querySelector('#tooltipEnabled').checked, settings: (await chrome.storage.sync.get('settings')).settings, access: await chrome.permissions.contains({ origins: ['<all_urls>'] }), registered: (await chrome.scripting.getRegisteredContentScripts()).length, errors: ${JSON.stringify(setup.errors())} }))()`)));
   await setup.close();
 
   // 1. Tooltip on a real-looking page, captured straight at 1280x800.
@@ -114,6 +115,7 @@ try {
   const popup = await chrome.open(`chrome-extension://${extId}/popup.html`);
   await popup.waitFor("document.documentElement.dataset.ready");
   await popup.eval(`(() => { const s = document.querySelector('#source'); s.value = 'Съешь же ещё этих мягких французских булок, да выпей чаю'; s.dispatchEvent(new Event('input', { bubbles: true })); s.blur(); })()`);
+  if (process.env.DEBUG) console.log('popup:', JSON.stringify(await popup.eval(`(async () => ({ settings: (await chrome.storage.sync.get('settings')).settings, access: await chrome.permissions.contains({ origins: ['<all_urls>'] }), banner: !document.querySelector('#tooltip-banner').hidden }))()`)));
   await popup.setViewport(400, 470, 2);
   const popupShot = join(TMP, 'popup.png');
   writeFileSync(popupShot, await popup.screenshot());

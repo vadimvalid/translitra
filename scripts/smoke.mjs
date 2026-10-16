@@ -96,8 +96,8 @@ try {
     sel.dispatchEvent(new Event('change', { bubbles: true }));
   })()`);
   await sleep(300);
-  const bannerVisible = await popup.eval("!document.querySelector('#tooltip-banner').hidden");
-  check('popup offers to turn the tooltip on', bannerVisible === true);
+  const bannerDisplay = await popup.eval("getComputedStyle(document.querySelector('#tooltip-banner')).display");
+  check('popup offers to turn the tooltip on', bannerDisplay !== 'none', bannerDisplay);
   check('popup has no errors', popup.errors().length === 0, JSON.stringify(popup.errors()).slice(0, 300));
   await shot(popup, 'popup', 400, 420);
   await popup.close();
@@ -120,8 +120,8 @@ try {
   // ---------- window ----------
   const win = await chrome.open(`chrome-extension://${extId}/window.html`);
   check('converter window renders', await win.waitFor("document.documentElement.dataset.ready"), JSON.stringify(win.errors()));
-  const openWindowHidden = await win.eval("document.querySelector('#open-window').hidden");
-  check('window hides "open in window" button', openWindowHidden === true);
+  const openWindowDisplay = await win.eval("getComputedStyle(document.querySelector('#open-window')).display");
+  check('window hides "open in window" button', openWindowDisplay === 'none', openWindowDisplay);
   await win.eval(`(() => { const s = document.querySelector('#source'); s.value = 'Съешь же ещё этих мягких французских булок, да выпей чаю'; s.dispatchEvent(new Event('input', { bubbles: true })); })()`);
   await shot(win, 'window', 560, 480);
   await win.close();
@@ -144,6 +144,11 @@ try {
     settings: (await chrome.storage.sync.get('settings')).settings?.tooltipEnabled,
   }))()`);
   check('enabling the tooltip registers the content script', enabled.checked && enabled.registered.includes('translitra-tooltip') && enabled.settings === true, JSON.stringify(enabled));
+  const popup2 = await chrome.open(`chrome-extension://${grantedId}/popup.html`);
+  await popup2.waitFor("document.documentElement.dataset.ready");
+  const bannerAfter = await popup2.eval("getComputedStyle(document.querySelector('#tooltip-banner')).display");
+  check('popup hides the banner once the tooltip is on', bannerAfter === 'none', bannerAfter);
+  await popup2.close();
   check('options has no errors', opt2.errors().length === 0, JSON.stringify(opt2.errors()).slice(0, 300));
   await opt2.close();
 
