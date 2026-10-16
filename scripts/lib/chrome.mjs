@@ -57,8 +57,8 @@ export class Session {
   send(method, params) {
     return this.pipe.send(method, params, this.sessionId);
   }
-  async eval(expression) {
-    const r = await this.send('Runtime.evaluate', { expression, awaitPromise: true, returnByValue: true });
+  async eval(expression, { userGesture = false } = {}) {
+    const r = await this.send('Runtime.evaluate', { expression, awaitPromise: true, returnByValue: true, userGesture });
     if (r.exceptionDetails) throw new Error(r.exceptionDetails.exception?.description ?? r.exceptionDetails.text);
     return r.result.value;
   }

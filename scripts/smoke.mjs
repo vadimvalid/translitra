@@ -6,12 +6,14 @@
  *   SMOKE_SHOTS=<dir> pnpm smoke    (also saves PNG screenshots of each page)
  *   CHROME_BIN=/path/to/chrome ...  (override the browser binary)
  */
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { cpSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { createServer } from 'node:http';
 import { join, resolve } from 'node:path';
 import { Chrome, sleep } from './lib/chrome.mjs';
 
 const EXT_DIR = resolve('.output/chrome-mv3');
+/** Copy of the build with page access pre-granted, since CDP cannot click Chrome's permission prompt. */
+const GRANTED_DIR = resolve('.output/chrome-mv3-smoke-granted');
 const SHOTS = process.env.SMOKE_SHOTS;
 if (SHOTS) mkdirSync(SHOTS, { recursive: true });
 
@@ -48,6 +50,11 @@ try {
   const targets = await chrome.targets();
   const sw = targets.find((t) => t.type === 'service_worker' && t.url === `chrome-extension://${extId}/background.js`);
   check('service worker is running', Boolean(sw), sw ? '' : targets.map((t) => `${t.type}:${t.url}`).join(' | '));
+
+  const manifest = JSON.parse(readFileSync(join(EXT_DIR, 'manifest.json'), 'utf8'));
+  check('manifest has no required host permissions', !manifest.host_permissions && !manifest.content_scripts, JSON.stringify({ host: manifest.host_permissions, cs: manifest.content_scripts }));
+  check('manifest declares optional <all_urls>', manifest.optional_host_permissions?.includes('<all_urls>'), JSON.stringify(manifest.optional_host_permissions));
+  check('manifest permissions are minimal', JSON.stringify([...manifest.permissions].sort()) === JSON.stringify(['activeTab', 'contextMenus', 'scripting', 'storage']), JSON.stringify(manifest.permissions));
 
   // ---------- popup ----------
   const popup = await chrome.open(`chrome-extension://${extId}/popup.html`);
@@ -89,6 +96,8 @@ try {
     sel.dispatchEvent(new Event('change', { bubbles: true }));
   })()`);
   await sleep(300);
+  const bannerVisible = await popup.eval("!document.querySelector('#tooltip-banner').hidden");
+  check('popup offers to turn the tooltip on', bannerVisible === true);
   check('popup has no errors', popup.errors().length === 0, JSON.stringify(popup.errors()).slice(0, 300));
   await shot(popup, 'popup', 400, 420);
   await popup.close();
@@ -103,7 +112,9 @@ try {
     delay: document.querySelector('#tooltipDelay').value,
   }))()`);
   await shot(options, 'options', 640, 560);
-  check('options shows defaults', optState.title.length > 0 && optState.standard === 'popular' && optState.tooltip === true && optState.delay === '150', JSON.stringify(optState));
+  check('options shows defaults', optState.title.length > 0 && optState.standard === 'popular' && optState.tooltip === false && optState.delay === '150', JSON.stringify(optState));
+  const registeredBefore = await options.eval('chrome.scripting.getRegisteredContentScripts().then(s => s.length)');
+  check('no content script registered without page access', registeredBefore === 0, String(registeredBefore));
   await options.close();
 
   // ---------- window ----------
@@ -115,7 +126,27 @@ try {
   await shot(win, 'window', 560, 480);
   await win.close();
 
-  // ---------- content script ----------
+  // ---------- tooltip: enable flow on a build with page access granted ----------
+  rmSync(GRANTED_DIR, { recursive: true, force: true });
+  cpSync(EXT_DIR, GRANTED_DIR, { recursive: true });
+  const grantedManifest = { ...manifest, host_permissions: ['<all_urls>'] };
+  writeFileSync(join(GRANTED_DIR, 'manifest.json'), JSON.stringify(grantedManifest));
+  const grantedId = await chrome.loadExtension(GRANTED_DIR);
+  await sleep(800);
+
+  const opt2 = await chrome.open(`chrome-extension://${grantedId}/options.html`);
+  await opt2.waitFor("document.querySelector('#standard option')");
+  await opt2.eval("document.querySelector('#tooltipEnabled').click()", { userGesture: true });
+  await sleep(800);
+  const enabled = await opt2.eval(`(async () => ({
+    checked: document.querySelector('#tooltipEnabled').checked,
+    registered: (await chrome.scripting.getRegisteredContentScripts()).map(s => s.id),
+    settings: (await chrome.storage.sync.get('settings')).settings?.tooltipEnabled,
+  }))()`);
+  check('enabling the tooltip registers the content script', enabled.checked && enabled.registered.includes('translitra-tooltip') && enabled.settings === true, JSON.stringify(enabled));
+  check('options has no errors', opt2.errors().length === 0, JSON.stringify(opt2.errors()).slice(0, 300));
+  await opt2.close();
+
   const tab = await chrome.open(pageUrl);
   await tab.waitFor("document.getElementById('ru')");
   await sleep(600);
@@ -158,12 +189,24 @@ try {
   check('tooltip ignores selection inside textarea', tipTextarea === true);
   check('page has no errors', tab.errors().length === 0, JSON.stringify(tab.errors()).slice(0, 300));
   await tab.close();
+
+  const opt3 = await chrome.open(`chrome-extension://${grantedId}/options.html`);
+  await opt3.waitFor("document.querySelector('#tooltipEnabled').checked");
+  await opt3.eval("document.querySelector('#tooltipEnabled').click()", { userGesture: true });
+  await sleep(800);
+  const disabled = await opt3.eval(`(async () => ({
+    checked: document.querySelector('#tooltipEnabled').checked,
+    registered: (await chrome.scripting.getRegisteredContentScripts()).length,
+  }))()`);
+  check('disabling the tooltip unregisters the content script', !disabled.checked && disabled.registered === 0, JSON.stringify(disabled));
+  await opt3.close();
 } catch (err) {
   console.error(err);
   failures.push('exception: ' + err.message);
 } finally {
   await chrome?.close();
   server.close();
+  rmSync(GRANTED_DIR, { recursive: true, force: true });
 }
 
 if (failures.length) {

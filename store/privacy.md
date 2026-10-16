@@ -8,6 +8,8 @@ Translitra is a browser extension that transliterates text between Cyrillic and 
 
 - The text you select on a web page, type into the extension's popup or converter window, or pass through the context menu or keyboard shortcut.
 
+Access to web page content is optional. It is requested through Chrome's permission prompt only when you turn on the selection tooltip, and it is released again when you turn the tooltip off.
+
 All processing happens locally inside your browser. The extension makes no network requests.
 
 ## What the extension stores

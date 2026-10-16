@@ -7,6 +7,7 @@ async function main(): Promise<void> {
   const root = document.getElementById('app')!;
   const converter = await mountConverter(root, {
     showOpenWindow: true,
+    showTooltipBanner: true,
     onOpenWindow: async (text) => {
       await openConverterWindow(text);
       window.close();

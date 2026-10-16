@@ -2,6 +2,7 @@ import { STANDARDS, transliterate, type DirectionOption, type Standard } from '.
 import { loadSettings, onSettingsChange, saveSettings, type Settings } from './settings';
 import { localizeDom, t } from './i18n';
 import { applyTheme } from './theme';
+import { enableTooltip, hasPageAccess } from './permissions';
 
 export interface ConverterHandle {
   setSource(text: string): void;
@@ -12,6 +13,8 @@ export interface ConverterHandle {
 export interface ConverterOptions {
   /** Show the "Open in window" button. */
   showOpenWindow: boolean;
+  /** Offer to turn the selection tooltip on when it is off. */
+  showTooltipBanner?: boolean;
   onOpenWindow?: (text: string) => void;
 }
 
@@ -19,6 +22,10 @@ const DIRECTIONS: DirectionOption[] = ['auto', 'cyr2lat', 'lat2cyr'];
 
 export function renderConverterMarkup(): string {
   return `
+    <div class="banner" id="tooltip-banner" hidden>
+      <span data-i18n="tooltipBanner"></span>
+      <button id="enable-tooltip" class="small primary" data-i18n="enableTooltip"></button>
+    </div>
     <div class="toolbar">
       <label class="field">
         <span data-i18n="standard"></span>
@@ -145,6 +152,23 @@ export async function mountConverter(root: HTMLElement, options: ConverterOption
     e.preventDefault();
     void chrome.runtime.openOptionsPage();
   });
+
+  if (options.showTooltipBanner) {
+    const bannerEl = root.querySelector<HTMLDivElement>('#tooltip-banner')!;
+    const enableEl = root.querySelector<HTMLButtonElement>('#enable-tooltip')!;
+    const refreshBanner = async () => {
+      bannerEl.hidden = settings.tooltipEnabled && (await hasPageAccess());
+    };
+    void refreshBanner();
+    enableEl.addEventListener('click', async () => {
+      enableEl.disabled = true;
+      try {
+        if (await enableTooltip()) bannerEl.hidden = true;
+      } finally {
+        enableEl.disabled = false;
+      }
+    });
+  }
 
   if (options.showOpenWindow) {
     openWindowEl.hidden = false;

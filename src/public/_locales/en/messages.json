@@ -1,43 +1,134 @@
 {
-  "extName": { "message": "Translitra — Cyrillic ⇄ Latin" },
-  "extDescription": { "message": "Transliterate selected text between Cyrillic and Latin instantly. Multiple standards, auto direction, fully offline." },
-  "cmdOpenConverter": { "message": "Open converter window with the selected text" },
-  "ctxTransliterate": { "message": "Transliterate \"%s\"" },
-  "standard": { "message": "Standard" },
-  "direction": { "message": "Direction" },
-  "direction_auto": { "message": "Auto" },
-  "direction_cyr2lat": { "message": "Cyrillic → Latin" },
-  "direction_lat2cyr": { "message": "Latin → Cyrillic" },
-  "standard_popular": { "message": "Popular" },
-  "standard_gost": { "message": "GOST 7.79-2000 (B)" },
-  "standard_icao": { "message": "Passport (ICAO)" },
-  "standard_bgn": { "message": "BGN/PCGN" },
-  "source": { "message": "Source" },
-  "sourcePlaceholder": { "message": "Type or paste text…" },
-  "result": { "message": "Result" },
-  "copy": { "message": "Copy" },
-  "copied": { "message": "Copied!" },
-  "swap": { "message": "Swap source and result" },
-  "clear": { "message": "Clear" },
-  "openWindow": { "message": "Open in window" },
-  "settings": { "message": "Settings" },
-  "reverseApproximate": { "message": "Latin → Cyrillic is approximate: some letters are ambiguous." },
-  "windowTitle": { "message": "Translitra" },
-  "optionsTitle": { "message": "Translitra settings" },
-  "optStandard": { "message": "Default standard" },
-  "optStandardDesc": { "message": "Used by the tooltip, the popup and the context menu." },
-  "optTooltip": { "message": "Show tooltip on selection" },
-  "optTooltipDesc": { "message": "A small bubble with the transliteration appears when you select text on any page." },
-  "optDelay": { "message": "Tooltip delay (ms)" },
-  "optDelayDesc": { "message": "How long to wait after the selection stops changing." },
-  "optIgnoreInputs": { "message": "Ignore text fields" },
-  "optIgnoreInputsDesc": { "message": "Do not show the tooltip for selections inside inputs, text areas and editors." },
-  "optTheme": { "message": "Theme" },
-  "theme_system": { "message": "System" },
-  "theme_light": { "message": "Light" },
-  "theme_dark": { "message": "Dark" },
-  "optShortcut": { "message": "Keyboard shortcut" },
-  "optShortcutDesc": { "message": "Default: Alt+Shift+T opens the converter window. Change it in chrome://extensions/shortcuts." },
-  "optSaved": { "message": "Saved" },
-  "optPrivacy": { "message": "All text is processed locally in your browser. Nothing is sent anywhere or stored." }
+  "extName": {
+    "message": "Translitra — Cyrillic ⇄ Latin"
+  },
+  "extDescription": {
+    "message": "Transliterate selected text between Cyrillic and Latin instantly. Multiple standards, auto direction, fully offline."
+  },
+  "cmdOpenConverter": {
+    "message": "Open converter window with the selected text"
+  },
+  "ctxTransliterate": {
+    "message": "Transliterate \"%s\""
+  },
+  "standard": {
+    "message": "Standard"
+  },
+  "direction": {
+    "message": "Direction"
+  },
+  "direction_auto": {
+    "message": "Auto"
+  },
+  "direction_cyr2lat": {
+    "message": "Cyrillic → Latin"
+  },
+  "direction_lat2cyr": {
+    "message": "Latin → Cyrillic"
+  },
+  "standard_popular": {
+    "message": "Popular"
+  },
+  "standard_gost": {
+    "message": "GOST 7.79-2000 (B)"
+  },
+  "standard_icao": {
+    "message": "Passport (ICAO)"
+  },
+  "standard_bgn": {
+    "message": "BGN/PCGN"
+  },
+  "source": {
+    "message": "Source"
+  },
+  "sourcePlaceholder": {
+    "message": "Type or paste text…"
+  },
+  "result": {
+    "message": "Result"
+  },
+  "copy": {
+    "message": "Copy"
+  },
+  "copied": {
+    "message": "Copied!"
+  },
+  "swap": {
+    "message": "Swap source and result"
+  },
+  "clear": {
+    "message": "Clear"
+  },
+  "openWindow": {
+    "message": "Open in window"
+  },
+  "settings": {
+    "message": "Settings"
+  },
+  "reverseApproximate": {
+    "message": "Latin → Cyrillic is approximate: some letters are ambiguous."
+  },
+  "windowTitle": {
+    "message": "Translitra"
+  },
+  "optionsTitle": {
+    "message": "Translitra settings"
+  },
+  "optStandard": {
+    "message": "Default standard"
+  },
+  "optStandardDesc": {
+    "message": "Used by the tooltip, the popup and the context menu."
+  },
+  "optTooltip": {
+    "message": "Show tooltip on selection"
+  },
+  "optTooltipDesc": {
+    "message": "A small bubble with the transliteration appears when you select text on a page. Needs access to page content."
+  },
+  "optDelay": {
+    "message": "Tooltip delay (ms)"
+  },
+  "optDelayDesc": {
+    "message": "How long to wait after the selection stops changing."
+  },
+  "optIgnoreInputs": {
+    "message": "Ignore text fields"
+  },
+  "optIgnoreInputsDesc": {
+    "message": "Do not show the tooltip for selections inside inputs, text areas and editors."
+  },
+  "optTheme": {
+    "message": "Theme"
+  },
+  "theme_system": {
+    "message": "System"
+  },
+  "theme_light": {
+    "message": "Light"
+  },
+  "theme_dark": {
+    "message": "Dark"
+  },
+  "optShortcut": {
+    "message": "Keyboard shortcut"
+  },
+  "optShortcutDesc": {
+    "message": "Default: Alt+Shift+T opens the converter window. Change it in chrome://extensions/shortcuts."
+  },
+  "optSaved": {
+    "message": "Saved"
+  },
+  "optPrivacy": {
+    "message": "All text is processed locally in your browser. Nothing is sent anywhere or stored."
+  },
+  "tooltipBanner": {
+    "message": "Show a tooltip when you select text on any page?"
+  },
+  "enableTooltip": {
+    "message": "Turn on"
+  },
+  "optTooltipAccess": {
+    "message": "Turning this on asks Chrome for permission to read text you select on websites. The text never leaves your browser."
+  }
 }

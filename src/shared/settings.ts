@@ -16,7 +16,8 @@ export interface Settings {
 export const DEFAULT_SETTINGS: Settings = {
   standard: 'popular',
   direction: 'auto',
-  tooltipEnabled: true,
+  // Off until the user grants page access (see shared/permissions.ts).
+  tooltipEnabled: false,
   tooltipDelay: 150,
   ignoreInputs: true,
   theme: 'system',

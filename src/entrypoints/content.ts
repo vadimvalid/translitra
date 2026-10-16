@@ -47,12 +47,26 @@ const STYLES = `
   }
 `;
 
+declare global {
+  interface Window {
+    __translitraTooltip?: boolean;
+  }
+}
+
 export default defineContentScript({
   matches: ['<all_urls>'],
   runAt: 'document_idle',
   allFrames: false,
+  // Not listed in the manifest: registered by the background worker once the
+  // user grants page access (see shared/permissions.ts).
+  registration: 'runtime',
 
   async main() {
+    // The script can arrive twice (manual injection into open tabs, then the
+    // registered one on navigation); keep a single instance per page.
+    if (window.__translitraTooltip) return;
+    window.__translitraTooltip = true;
+
     let settings: Settings = await loadSettings();
     onSettingsChange((next) => {
       settings = next;

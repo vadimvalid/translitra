@@ -4,13 +4,13 @@ Chrome extension for Cyrillic ⇄ Latin transliteration. Select text on any page
 
 ## Features
 
-- **Tooltip on selection.** Select text anywhere, get the result with a Copy button. Nothing to click.
+- **Tooltip on selection.** Select text anywhere, get the result with a Copy button. Opt-in: page access is requested only when you turn it on.
 - **Auto direction.** Cyrillic → Latin or Latin → Cyrillic, chosen by the dominant script of the selection.
 - **Four standards.** Popular (everyday), GOST 7.79-2000 System B, ICAO (Russian passport) and BGN/PCGN.
 - **Popup and standalone window.** Click the toolbar icon for a quick converter, or open it in its own window (`Alt+Shift+T`).
 - **Context menu.** Right-click a selection → "Transliterate".
 - **Settings.** Default standard, tooltip on/off, delay, ignore text fields, light/dark theme.
-- **Offline and private.** No network requests, nothing stored except your settings.
+- **Offline and private.** No network requests, nothing stored except your settings. No host permissions at install; `<all_urls>` is optional and granted only for the tooltip.
 
 Reverse transliteration (Latin → Cyrillic) is inherently ambiguous and marked as approximate in the UI.
 
