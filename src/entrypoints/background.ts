@@ -5,10 +5,12 @@ const MENU_ID = 'translitra-selection';
 
 export default defineBackground(() => {
   chrome.runtime.onInstalled.addListener(() => {
-    chrome.contextMenus.create({
-      id: MENU_ID,
-      title: chrome.i18n.getMessage('ctxTransliterate'),
-      contexts: ['selection'],
+    chrome.contextMenus.removeAll(() => {
+      chrome.contextMenus.create({
+        id: MENU_ID,
+        title: chrome.i18n.getMessage('ctxTransliterate'),
+        contexts: ['selection'],
+      });
     });
   });
 
