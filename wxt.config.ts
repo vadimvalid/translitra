@@ -11,8 +11,11 @@ export default defineConfig({
   hooks: {
     'build:manifestGenerated': (_wxt, manifest) => {
       // The tooltip content script is registered at runtime, so WXT must not
-      // turn its `matches` into required host permissions.
-      delete manifest.host_permissions;
+      // turn its `matches` into required host permissions. Other entries
+      // (the dev server origin WXT adds in dev mode) must stay.
+      const hosts = (manifest.host_permissions ?? []).filter((h: string) => h !== '<all_urls>');
+      if (hosts.length) manifest.host_permissions = hosts;
+      else delete manifest.host_permissions;
       if (!manifest.content_scripts?.length) delete manifest.content_scripts;
     },
   },
