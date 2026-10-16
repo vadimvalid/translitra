@@ -3,6 +3,10 @@ import { defineConfig } from 'wxt';
 export default defineConfig({
   srcDir: 'src',
   publicDir: 'src/public',
+  webExt: {
+    // Dev browser opens a page with plenty of Cyrillic text to select.
+    startUrls: ['https://ru.wikipedia.org/wiki/Транслитерация'],
+  },
   outDir: '.output',
   manifest: {
     name: '__MSG_extName__',
