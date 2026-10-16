@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Translitra settings</title>
+  </head>
+  <body>
+    <main class="options">
+      <h1 data-i18n="optionsTitle"></h1>
+
+      <div class="row">
+        <div class="label">
+          <span data-i18n="optStandard"></span>
+          <span class="desc" data-i18n="optStandardDesc"></span>
+        </div>
+        <select id="standard"></select>
+      </div>
+
+      <div class="row">
+        <div class="label">
+          <span data-i18n="optTooltip"></span>
+          <span class="desc" data-i18n="optTooltipDesc"></span>
+        </div>
+        <input type="checkbox" id="tooltipEnabled" />
+      </div>
+
+      <div class="row">
+        <div class="label">
+          <span data-i18n="optDelay"></span>
+          <span class="desc" data-i18n="optDelayDesc"></span>
+        </div>
+        <input type="number" id="tooltipDelay" min="0" max="2000" step="50" />
+      </div>
+
+      <div class="row">
+        <div class="label">
+          <span data-i18n="optIgnoreInputs"></span>
+          <span class="desc" data-i18n="optIgnoreInputsDesc"></span>
+        </div>
+        <input type="checkbox" id="ignoreInputs" />
+      </div>
+
+      <div class="row">
+        <div class="label">
+          <span data-i18n="optTheme"></span>
+        </div>
+        <select id="theme"></select>
+      </div>
+
+      <div class="row">
+        <div class="label">
+          <span data-i18n="optShortcut"></span>
+          <span class="desc" data-i18n="optShortcutDesc"></span>
+        </div>
+      </div>
+
+      <p class="hint" data-i18n="optPrivacy"></p>
+      <div class="status" id="status"></div>
+    </main>
+    <script type="module" src="./main.ts"></script>
+  </body>
+</html>

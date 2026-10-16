@@ -2,6 +2,7 @@ import { defineConfig } from 'wxt';
 
 export default defineConfig({
   srcDir: 'src',
+  publicDir: 'src/public',
   outDir: '.output',
   manifest: {
     name: '__MSG_extName__',
